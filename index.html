@@ -456,3 +456,99 @@
     </script>
 </body>
 </html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, orientation=landscape">
+    <title>Kings Fire: Force Start</title>
+    <style>
+        body { margin: 0; background: #000; color: gold; font-family: sans-serif; text-align: center; overflow: hidden; }
+        .page { position: fixed; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center; background: black; }
+        #logo-page { display: flex; z-index: 100; }
+        #vaibhav-page { z-index: 90; }
+        #flag-page { background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://upload.wikimedia.org/wikipedia/en/4/41/Flag_of_India.svg'); background-size: cover; background-position: center; z-index: 80; }
+        #lobby { display: none; position: fixed; inset: 0; background: #050510; z-index: 10; }
+        
+        .start-btn { margin-top: 20px; padding: 15px 30px; background: gold; border: none; font-weight: bold; border-radius: 10px; cursor: pointer; }
+        .bar { width: 60%; height: 10px; background: #222; border-radius: 5px; margin-top: 20px; border: 1px solid #444; }
+        #progress { width: 0%; height: 100%; background: #138808; }
+        .hud { display: flex; justify-content: space-between; padding: 15px; background: rgba(0,0,0,0.8); border-bottom: 2px solid gold; width: 100%; box-sizing: border-box; }
+    </style>
+</head>
+<body>
+
+    <div id="logo-page" class="page">
+        <h1 style="font-size: 70px;">KF</h1>
+        <p style="letter-spacing: 10px;">KINGS FIRE</p>
+        <button class="start-btn" onclick="goToVaibhav()">TAP TO START ➔</button>
+    </div>
+
+    <div id="vaibhav-page" class="page">
+        <p style="color: #888;">PRODUCED BY</p>
+        <h1 style="font-size: 50px;">VAIBHAV</h1>
+    </div>
+
+    <div id="flag-page" class="page">
+        <h2>🇮🇳 LOADING...</h2>
+        <div class="bar"><div id="progress"></div></div>
+    </div>
+
+    <div id="lobby">
+        <div class="hud">
+            <span>💎 0 | 🟡 KF: 0</span>
+            <span style="color: gold; font-weight: bold;">LOBBY</span>
+        </div>
+        <div style="position: absolute; bottom: 30px; right: 30px;">
+            <button class="start-btn" onclick="window.location.href='upi://pay?pa=dineshbherya@ybl&pn=KingsFire&am=20&cu=INR'">TOP-UP ₹20</button>
+        </div>
+        <canvas id="rain" style="position: absolute; inset: 0; pointer-events: none;"></canvas>
+    </div>
+
+    <script>
+        function goToVaibhav() {
+            document.getElementById('logo-page').style.display = 'none';
+            document.getElementById('vaibhav-page').style.display = 'flex';
+            setTimeout(goToFlag, 2000);
+        }
+
+        function goToFlag() {
+            document.getElementById('vaibhav-page').style.display = 'none';
+            document.getElementById('flag-page').style.display = 'flex';
+            let p = 0;
+            let intv = setInterval(() => {
+                p += 5;
+                document.getElementById('progress').style.width = p + "%";
+                if(p >= 100) {
+                    clearInterval(intv);
+                    showLobby();
+                }
+            }, 100);
+        }
+
+        function showLobby() {
+            document.getElementById('flag-page').style.display = 'none';
+            document.getElementById('lobby').style.display = 'block';
+            startRain();
+        }
+
+        function startRain() {
+            const c = document.getElementById('rain');
+            const ctx = c.getContext('2d');
+            c.width = window.innerWidth; c.height = window.innerHeight;
+            let drops = [];
+            for(let i=0; i<100; i++) drops.push({x: Math.random()*c.width, y: Math.random()*c.height, s: Math.random()*5+5});
+            function draw() {
+                ctx.clearRect(0,0,c.width,c.height);
+                ctx.strokeStyle = 'rgba(174,194,224,0.5)';
+                drops.forEach(d => {
+                    ctx.beginPath(); ctx.moveTo(d.x, d.y); ctx.lineTo(d.x, d.y+d.s); ctx.stroke();
+                    d.y += d.s; if(d.y > c.height) d.y = -10;
+                });
+                requestAnimationFrame(draw);
+            }
+            draw();
+        }
+    </script>
+</body>
+</html>
