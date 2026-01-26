@@ -312,3 +312,147 @@
 </body>
 </html>
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, orientation=landscape">
+    <title>Kings Fire: Fixed Edition</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        body { margin: 0; overflow: hidden; background: #000; font-family: 'Segoe UI', sans-serif; color: white; text-align: center; width: 100vw; height: 100vh; }
+        
+        /* ALL SCREENS HIDDEN BY DEFAULT EXCEPT LOGO */
+        .screen { position: fixed; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 10000; background: black; }
+        #kf-logo-screen { display: flex; opacity: 1; transition: opacity 1s; }
+        #vaibhav-screen { background: #050505; }
+        #loading-screen { background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://upload.wikimedia.org/wikipedia/en/4/41/Flag_of_India.svg'); background-size: cover; background-position: center; }
+        
+        #welcome-modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(15,15,15,0.98); padding: 25px; border: 3px solid gold; z-index: 20000; pointer-events: auto; border-radius: 15px; width: 50%; }
+
+        .loader-bar { width: 50%; height: 8px; background: #222; border-radius: 4px; margin-top: 20px; overflow: hidden; }
+        #load-progress { width: 0%; height: 100%; background: #138808; }
+        
+        #ui { display: none; position: absolute; inset: 0; z-index: 100; pointer-events: none; }
+        .hud { display: flex; justify-content: space-between; padding: 10px 40px; pointer-events: auto; background: rgba(0,0,0,0.8); border-bottom: 2px solid gold; }
+        .btn { background: gold; color: black; padding: 10px 20px; border: none; font-weight: bold; border-radius: 5px; cursor: pointer; pointer-events: auto; margin: 5px; }
+        #rain-canvas { position: absolute; inset: 0; pointer-events: none; opacity: 0.3; }
+    </style>
+</head>
+<body>
+
+    <div id="kf-logo-screen" class="screen" onclick="startSequence()">
+        <h1 style="color: gold; font-size: 70px; margin: 0; text-shadow: 0 0 20px gold;">KF</h1>
+        <p style="color: gold; letter-spacing: 10px;">KINGS FIRE</p>
+        <p style="font-size: 12px; color: #444; margin-top: 20px;">TAP TO BEGIN IF STUCK</p>
+    </div>
+
+    <div id="vaibhav-screen" class="screen">
+        <p style="letter-spacing: 3px; color: #888;">PRODUCED BY</p>
+        <h1 style="color: gold; font-size: 50px; margin: 0;">VAIBHAV</h1>
+    </div>
+
+    <div id="loading-screen" class="screen">
+        <h2 style="text-shadow: 2px 2px 10px black;">🇮🇳 LOADING MASS WORLD...</h2>
+        <div class="loader-bar"><div id="load-progress"></div></div>
+    </div>
+
+    <div id="welcome-modal">
+        <h2 style="color: gold;">👑 WELCOME LEGEND!</h2>
+        <p>New Era of Kings Fire is LIVE.<br>Play as <b>Virat Kohli</b> & <b>D Boss</b>.</p>
+        <button class="btn" onclick="closeWelcome()">START BATTLE</button>
+    </div>
+
+    <canvas id="rain-canvas"></canvas>
+    <div id="ui">
+        <div class="hud">
+            <div style="font-size: 20px;">💎 <span id="diamond-bal">0</span> | 🟡 KF: <span id="kf-coin-bal">0</span></div>
+            <div style="color: gold; font-weight: bold;">LOBBY</div>
+        </div>
+        <div style="position: absolute; bottom: 30px; right: 30px; pointer-events: auto;">
+            <button class="btn" style="background: green; color: white;" onclick="alert('Training Grounds Soon!')">TRAINING</button>
+            <button class="btn" onclick="pay(20)">TOP-UP</button>
+        </div>
+    </div>
+
+    <script>
+        // Force start if no click after 2 seconds
+        window.onload = () => { setTimeout(startSequence, 2000); };
+
+        function startSequence() {
+            const logo = document.getElementById('kf-logo-screen');
+            const vScren = document.getElementById('vaibhav-screen');
+            
+            // Move to Vaibhav Screen
+            logo.style.display = 'none';
+            vScren.style.display = 'flex';
+
+            setTimeout(() => {
+                vScren.style.display = 'none';
+                document.getElementById('loading-screen').style.display = 'flex';
+                runLoader();
+            }, 2500);
+        }
+
+        function runLoader() {
+            let prog = 0;
+            let bar = document.getElementById('load-progress');
+            let intv = setInterval(() => {
+                prog += 2;
+                bar.style.width = prog + "%";
+                if(prog >= 100) {
+                    clearInterval(intv);
+                    showLobby();
+                }
+            }, 40);
+        }
+
+        function showLobby() {
+            document.getElementById('loading-screen').style.display = 'none';
+            document.getElementById('ui').style.display = 'block';
+            
+            // Show welcome only once
+            if(!localStorage.getItem('kf_new')) {
+                document.getElementById('welcome-modal').style.display = 'block';
+            }
+            startRain();
+        }
+
+        function closeWelcome() {
+            localStorage.setItem('kf_new', 'true');
+            document.getElementById('welcome-modal').style.display = 'none';
+        }
+
+        function pay(amt) { window.location.href = `upi://pay?pa=dineshbherya@ybl&pn=KingsFire&am=${amt}&cu=INR`; }
+
+        // RAIN
+        function startRain() {
+            const c = document.getElementById('rain-canvas');
+            const ctx = c.getContext('2d');
+            c.width = window.innerWidth; c.height = window.innerHeight;
+            let drops = [];
+            for(let i=0; i<100; i++) drops.push({x: Math.random()*c.width, y: Math.random()*c.height, s: Math.random()*5+5});
+            function draw() {
+                ctx.clearRect(0,0,c.width,c.height);
+                ctx.strokeStyle = 'rgba(174,194,224,0.5)';
+                drops.forEach(d => {
+                    ctx.beginPath(); ctx.moveTo(d.x, d.y); ctx.lineTo(d.x, d.y+d.s); ctx.stroke();
+                    d.y += d.s; if(d.y > c.height) d.y = -10;
+                });
+                requestAnimationFrame(draw);
+            }
+            draw();
+        }
+
+        // 3D Scene
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({alpha: true});
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+        camera.position.z = 5;
+        function animate() { requestAnimationFrame(animate); renderer.render(scene, camera); }
+        animate();
+    </script>
+</body>
+</html>
