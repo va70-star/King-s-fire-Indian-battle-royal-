@@ -659,4 +659,75 @@
     </script>
 </body>
 </html>
+using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
+
+public class KingsFireMasterController : MonoBehaviour 
+{
+    [Header("Security & Payment Settings")]
+    private bool isPaid = false;
+    private int secretAdminTaps = 0;
+    public string upiId = "dineshbherya@ybl";
+    
+    [Header("UI Panels")]
+    public GameObject lockScreen; // Screen that blocks the game
+    public GameObject mainLobby;  // The game lobby
+    public GameObject adminPanel; // Hidden admin panel
+    public InputField adminPasswordField;
+
+    [Header("Weapon & Environment Audio")]
+    public AudioSource weaponSource;
+    public AudioSource environmentSource; // For Rain/Airplane
+    public AudioSource footstepSource;
+
+    // --- INITIALIZATION ---
+    void Start() 
+    {
+        // Force Landscape Mode for the APK
+        Screen.orientation = ScreenOrientation.LandscapeLeft;
+        
+        // Block game access until payment is verified
+        lockScreen.SetActive(true);
+        mainLobby.SetActive(false);
+        adminPanel.SetActive(false);
+    }
+
+    // --- PAYMENT GATE LOGIC ---
+    public void ProcessPaymentVerification() 
+    {
+        // This function triggers after the buyer uploads their screenshot
+        // If verification passes:
+        isPaid = true;
+        lockScreen.SetActive(false);
+        mainLobby.SetActive(true);
+        Debug.Log("Payment Verified. Access Granted.");
+    }
+
+    // --- SECRET ADMIN PANEL ACCESS ---
+    public void OnTitleHeaderClicked() 
+    {
+        // Hidden Logic: Must tap the title 5 times to reveal Admin Panel
+        secretAdminTaps++;
+        if (secretAdminTaps >= 5) 
+        {
+            adminPanel.SetActive(true);
+            secretAdminTaps = 0;
+            Debug.Log("Secret Admin Panel Revealed.");
+        }
+    }
+
+    // --- AUDIO SYSTEM INTEGRATION ---
+    public void PlayWeaponSound(AudioClip clip) 
+    {
+        // Use PlayOneShot so sounds don't cut each other off
+        weaponSource.PlayOneShot(clip);
+    }
+
+    public void SetEnvironmentVolume(float intensity) 
+    {
+        // Adjust for Rain or Airplane volume dynamically
+        environmentSource.volume = intensity;
+    }
+}
 
