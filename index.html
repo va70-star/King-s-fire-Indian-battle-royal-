@@ -141,3 +141,124 @@
     </script>
 </body>
 </html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, orientation=landscape">
+    <title>KINGS FIRE - ULTIMATE</title>
+    <style>
+        body { margin: 0; background: #000; color: gold; font-family: 'Segoe UI', sans-serif; text-align: center; overflow: hidden; }
+        .screen { height: 100vh; width: 100vw; display: none; flex-direction: column; justify-content: center; align-items: center; position: absolute; }
+        
+        /* CINEMATIC STARTUP */
+        #logo-start { display: flex; background: black; }
+        #flag-start { background: #000; }
+        .flag-img { width: 100vw; height: 100vh; object-fit: cover; }
+
+        /* LOGIN SCREEN */
+        #login-screen { background: linear-gradient(45deg, #1a1a1a, #000); }
+        .login-box { background: rgba(255, 215, 0, 0.1); border: 2px solid gold; padding: 30px; border-radius: 20px; box-shadow: 0 0 30px gold; }
+
+        /* ADVANCED LOBBY (FF + BGMI Style) */
+        #lobby { background: url('https://w0.peakpx.com/wallpaper/242/502/HD-wallpaper-garena-free-fire-winterlands-lobby-thumbnail.jpg'); background-size: cover; }
+        .top-bar { position: absolute; top: 0; width: 100%; height: 50px; background: rgba(0,0,0,0.7); display: flex; justify-content: space-between; align-items: center; padding: 0 20px; border-bottom: 1px solid gold; }
+        .side-menu { position: absolute; left: 10px; top: 70px; display: flex; flex-direction: column; gap: 10px; }
+        .bottom-bar { position: absolute; bottom: 0; width: 100%; height: 60px; background: rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; gap: 20px; }
+
+        .btn-mass { background: gold; color: #000; border: none; padding: 12px 25px; font-weight: bold; border-radius: 5px; cursor: pointer; text-transform: uppercase; }
+        .btn-small { background: rgba(255,255,255,0.2); color: white; border: 1px solid white; padding: 5px 10px; font-size: 10px; border-radius: 3px; }
+        
+        input { background: #333; border: 1px solid gold; color: white; padding: 12px; margin: 15px; border-radius: 8px; width: 250px; text-align: center; }
+        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 350px; background: #111; border: 3px solid red; padding: 25px; z-index: 3000; border-radius: 15px; }
+    </style>
+</head>
+<body>
+
+    <div id="logo-start" class="screen">
+        <img src="https://img.icons8.com/emoji/96/crown-emoji.png" style="width:120px; filter: drop-shadow(0 0 20px gold);">
+        <h1 style="font-size: 60px; color: gold;">KINGS FIRE</h1>
+    </div>
+
+    <div id="flag-start" class="screen">
+        <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHJqZndqZndqZndqZndqZndqZndqZndqZndqZndqZndqZndqJmVwPXYxX2ludGVybmFsX2dpZl9ieV9pZCZjdD1n/M9ZpY2VpX3B3q/giphy.gif" class="flag-img">
+        <h2 style="position: absolute; bottom: 50px; color: white; background: rgba(0,0,0,0.5); padding: 10px 30px;">PRODUCED BY VAIBHAV</h2>
+    </div>
+
+    <div id="login-screen" class="screen">
+        <div class="login-box">
+            <h2 style="margin-top:0;">CREATE YOUR ACCOUNT</h2>
+            <input type="text" id="p-name" placeholder="Enter Nickname...">
+            <br>
+            <button class="btn-mass" onclick="enterGame()">START ADVENTURE</button>
+        </div>
+    </div>
+
+    <div id="lobby" class="screen">
+        <div class="top-bar">
+            <div style="text-align:left;"><b id="display-name">VAIBHAV</b> <br> <small>LV. 1 | Soldier</small></div>
+            <div>💰 <span id="coins">10000</span> | 💎 <span id="diamonds">0</span></div>
+            <button class="btn-small" onclick="location.reload()">LOGOUT</button>
+        </div>
+
+        <div class="side-menu">
+            <button class="btn-small">VAULT</button>
+            <button class="btn-small">PETS</button>
+            <button class="btn-small">WEAPONS</button>
+            <button class="btn-small" style="background:gold; color:black;" onclick="showPayModal()">STORE</button>
+        </div>
+
+        <div class="bottom-bar">
+            <button class="btn-mass" style="background: #222; color: gold; border: 1px solid gold;">MAP: MYSORE</button>
+            <button class="btn-mass" style="background: red; color: white; font-size: 24px; padding: 10px 50px;">START</button>
+            <button class="btn-mass" style="background: #222; color: gold; border: 1px solid gold;">SQUAD</button>
+        </div>
+    </div>
+
+    <div id="pay-modal" class="modal">
+        <h2 style="color: red;">⚠️ ACTION REQUIRED</h2>
+        <p>1. Pay ₹50 for 500 Diamonds</p>
+        <p>2. Upload screenshot or <br><b>YOU WILL NOT GET REWARD!</b></p>
+        <a id="upi-link" href="upi://pay?pa=dineshbherya@ybl&pn=KingsFire&am=50&cu=INR" class="btn-mass" style="display:inline-block; text-decoration:none;">PAY VIA UPI APP</a>
+        <br><br>
+        <input type="file" id="ss-upload" style="font-size:10px;">
+        <button class="btn-mass" onclick="submitPay()">VERIFY & GET DIAMONDS</button>
+        <button class="btn-small" onclick="closeModal()">CANCEL</button>
+    </div>
+
+    <audio id="bgm" loop src="lv_0_20260123223058.mp3"></audio>
+
+    <script>
+        // Startup Sequence
+        setTimeout(() => {
+            document.getElementById('logo-start').style.display = 'none';
+            document.getElementById('flag-start').style.display = 'flex';
+            setTimeout(() => {
+                document.getElementById('flag-start').style.display = 'none';
+                document.getElementById('login-screen').style.display = 'flex';
+            }, 1500); // Flag shows for 1.5 seconds
+        }, 2500); // Logo shows for 2.5 seconds
+
+        function enterGame() {
+            let name = document.getElementById('p-name').value;
+            if(!name) return alert("Nickname is required!");
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('lobby').style.display = 'flex';
+            document.getElementById('display-name').innerText = name.toUpperCase();
+            document.getElementById('bgm').play();
+        }
+
+        function showPayModal() { document.getElementById('pay-modal').style.display = 'block'; }
+        function closeModal() { document.getElementById('pay-modal').style.display = 'none'; }
+        
+        function submitPay() {
+            if(!document.getElementById('ss-upload').value) {
+                alert("ERROR: YOU MUST UPLOAD SCREENSHOT TO GET REWARD!");
+            } else {
+                alert("PAYMENT SUBMITTED! Vaibhav will verify and add diamonds within 1 hour.");
+                closeModal();
+            }
+        }
+    </script>
+</body>
+</html>
