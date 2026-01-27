@@ -2,732 +2,142 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, orientation=landscape">
-    <title>Kings Fire: Landscape Edition</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, orientation=landscape">
+    <title>KINGS FIRE - Produced by VAIBHAV</title>
     <style>
-        /* LANDSCAPE FORCED */
-        body { margin: 0; overflow: hidden; background: #000; font-family: 'Segoe UI', sans-serif; color: white; text-align: center; }
-        
-        /* 3-SECOND STARTUP SCREENS */
-        .screen { position: fixed; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 10000; background: black; }
-        #kf-logo-screen { display: flex; }
-        #vaibhav-screen { background: #050505; }
-        #loading-screen { background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://upload.wikimedia.org/wikipedia/en/4/41/Flag_of_India.svg'); background-size: cover; background-position: center; }
-        
-        .loader-bar { width: 60%; height: 10px; background: #222; border-radius: 5px; margin-top: 20px; overflow: hidden; border: 1px solid #444; }
-        #load-progress { width: 0%; height: 100%; background: #138808; transition: width 0.1s; }
-        
-        #ui { display: none; position: absolute; inset: 0; z-index: 100; pointer-events: none; }
-        .hud { display: flex; justify-content: space-between; padding: 10px 30px; pointer-events: auto; background: rgba(0,0,0,0.85); border-bottom: 2px solid gold; }
-        
-        .btn { background: gold; color: black; padding: 12px 25px; border: none; font-weight: bold; border-radius: 8px; cursor: pointer; pointer-events: auto; margin: 5px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); font-size: 16px; }
-        
-        #mass-modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #111; padding: 30px; border: 2px solid gold; z-index: 5000; pointer-events: auto; border-radius: 15px; width: 50%; }
-        #rain-canvas { position: absolute; inset: 0; pointer-events: none; opacity: 0.4; }
+        body { margin: 0; background: #000; color: gold; font-family: 'Segoe UI', Arial, sans-serif; text-align: center; overflow: hidden; }
+        .screen { height: 100vh; width: 100vw; display: none; flex-direction: column; justify-content: center; align-items: center; position: absolute; }
+        #splash { display: flex; background: #000; }
+        #lobby { background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1614850523296-d8c1af93d400?auto=format&fit=crop&w=1000'); background-size: cover; }
+        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 320px; background: #111; border: 2px solid gold; padding: 20px; z-index: 2000; border-radius: 15px; box-shadow: 0 0 20px rgba(255,215,0,0.3); }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; padding: 10px; overflow-y: auto; max-height: 45vh; width: 90%; }
+        .card { background: rgba(255, 215, 0, 0.1); border: 1px solid #444; border-radius: 8px; padding: 10px; transition: 0.3s; }
+        .btn-mass { background: gold; color: #000; border: none; padding: 10px 15px; font-weight: bold; border-radius: 5px; cursor: pointer; margin: 5px; }
+        input { background: #222; border: 1px solid gold; color: white; padding: 10px; margin: 10px; border-radius: 5px; text-align: center; }
     </style>
 </head>
 <body>
 
-    <div id="kf-logo-screen" class="screen">
-        <h1 style="color: gold; font-size: 80px; text-shadow: 0 0 30px gold; margin: 0;">KF</h1>
-        <p style="color: gold; letter-spacing: 15px; font-weight: bold; font-size: 20px;">KINGS FIRE</p>
+    <div id="splash" class="screen">
+        <img src="https://img.icons8.com/emoji/96/crown-emoji.png" style="width:100px; filter: drop-shadow(0 0 15px gold);">
+        <h1 style="font-size: 50px; margin:10px;">KINGS FIRE</h1>
+        <h2 style="color: white; letter-spacing: 5px;">PRODUCED BY VAIBHAV</h2>
+        <div style="width: 200px; height: 5px; background: #222; margin-top: 20px;"><div id="load-bar" style="width: 0%; height: 100%; background: gold;"></div></div>
     </div>
 
-    <div id="vaibhav-screen" class="screen">
-        <p style="letter-spacing: 5px; color: #888; margin: 0; font-size: 18px;">PRODUCED BY</p>
-        <h1 style="color: gold; font-size: 60px; margin: 0;">VAIBHAV</h1>
+    <div id="login-screen" class="screen" style="background: #111;">
+        <h2>KINGS FIRE LOGIN</h2>
+        <input type="text" id="p-name" placeholder="Nickname (e.g. Mass_Vaibhav)">
+        <input type="text" id="ref-code" placeholder="Referral Code (Optional)">
+        <button class="btn-mass" onclick="enterGame()">ENTER BATTLE</button>
+        <p style="font-size: 10px; color: grey;">Enter code to get 10,000 D-Coins Free!</p>
     </div>
 
-    <div id="loading-screen" class="screen">
-        <h2 style="text-shadow: 2px 2px 15px black; font-size: 24px;">🇮🇳 LOADING LANDSCAPE WORLD...</h2>
-        <div class="loader-bar"><div id="load-progress"></div></div>
-    </div>
-
-    <canvas id="rain-canvas"></canvas>
-    <div id="ui">
-        <div class="hud">
-            <div style="font-size: 22px;">💎 <span id="diamond-bal">0</span> | 🟡 KF: <span id="kf-coin-bal">0</span></div>
-            <div style="color: gold; font-weight: bold; cursor: pointer; font-size: 22px;" onclick="adminTrigger()">KINGS FIRE</div>
+    <div id="lobby" class="screen">
+        <div style="position: absolute; top: 10px; left: 10px; text-align: left;">
+            <button class="btn-mass" onclick="showProfile()">MY PROFILE</button>
+            <p style="margin:5px;">Coins: <span id="c-count">10000</span> | Diamonds: 0</p>
         </div>
-
-        <div style="position: absolute; bottom: 40px; right: 40px; pointer-events: auto;">
-            <button class="btn" style="background: lime;" onclick="startTraining()">START TRAINING</button>
-            <button class="btn" onclick="openMassModal()">MASS CODE</button>
-            <button class="btn" onclick="pay(20)">₹20 TOP-UP</button>
+        <h2 id="wel-name">WELCOME, LEGEND</h2>
+        <div class="grid" id="char-list"></div>
+        <div style="margin-top: 10px;">
+            <button class="btn-mass" onclick="openMap()">SELECT MAP</button>
+            <button class="btn-mass" onclick="showPayModal()">BUY DIAMONDS</button>
+            <button class="btn-mass" style="background:red; color:white;">START MATCH</button>
         </div>
     </div>
 
-    <div id="mass-modal">
-        <h3 style="color: gold;">ENTER SECRET CODE</h3>
-        <input type="text" id="code-input" placeholder="Type Here..." style="padding: 15px; width: 80%; border-radius: 8px; font-size: 18px;"><br><br>
-        <button class="btn" onclick="applyCode()">APPLY CODE</button>
-        <button class="btn" style="background:#444; color:white;" onclick="closeModal()">CLOSE</button>
+    <div id="pay-modal" class="modal">
+        <h3>TOP UP DIAMONDS</h3>
+        <p style="font-size: 14px;">Pay to UPI: <b style="color:gold;">dineshbherya@ybl</b></p>
+        <p style="font-size: 12px; color: #bbb;">Upload Screenshot to get Reward:</p>
+        <input type="file" id="ss-upload" style="font-size: 10px;">
+        <button class="btn-mass" onclick="submitPay()">SUBMIT PROOF</button>
+        <button class="btn-mass" style="background:grey;" onclick="closeModal()">CLOSE</button>
     </div>
+
+    <div id="map-screen" class="screen" style="background: #000;">
+        <h2>SELECT MULTIPLAYER MAP</h2>
+        <div class="grid">
+            <div class="card" onclick="setMap('Mysore Palace')">MYSORE PALACE</div>
+            <div class="card" onclick="setMap('Hampi Ruins')">HAMPI RUINS</div>
+            <div class="card" onclick="setMap('Ayodhya Temple')">AYODHYA</div>
+        </div>
+        <button class="btn-mass" onclick="closeMap()">BACK TO LOBBY</button>
+    </div>
+
+    <div id="profile-screen" class="screen" style="background: rgba(0,0,0,0.9);">
+        <h2>PERSONALITY PROFILE</h2>
+        <div class="card" style="width: 80%; border-color: gold;">
+            <p>NAME: <span id="prof-name">---</span></p>
+            <p>RANK: Soldier (0 RP)</p>
+            <p>PERSONALITY: Mass Legend</p>
+            <hr>
+            <button class="btn-mass" style="font-size:12px;" onclick="alert('Gifting Disabled: Need Level 10')">SEND GIFT</button>
+        </div>
+        <button class="btn-mass" onclick="closeProfile()">BACK</button>
+    </div>
+
+    <audio id="bgm" loop>
+        <source src="lv_0_20260123223058.mp3" type="audio/mpeg">
+    </audio>
 
     <script>
-        let diamonds = parseInt(localStorage.getItem('kf_d')) || 0;
-        let kfCoins = parseInt(localStorage.getItem('kf_c')) || 0;
+        // Loading Logic
+        let prg = 0;
+        let timer = setInterval(() => {
+            prg += 1.5; document.getElementById('load-bar').style.width = prg + "%";
+            if(prg>=100){ 
+                clearInterval(timer); 
+                document.getElementById('splash').style.display='none'; 
+                document.getElementById('login-screen').style.display='flex';
+            }
+        }, 40);
 
-        // Sequence Timer
-        setTimeout(() => { 
-            document.getElementById('kf-logo-screen').style.display='none'; 
-            document.getElementById('vaibhav-screen').style.display='flex'; 
-        }, 3000);
-        
-        setTimeout(() => { 
-            document.getElementById('vaibhav-screen').style.display='none'; 
-            document.getElementById('loading-screen').style.display='flex'; 
-            startLoading(); 
-        }, 5000);
+        function enterGame() {
+            let name = document.getElementById('p-name').value;
+            let ref = document.getElementById('ref-code').value;
+            if(!name) return alert("Enter your Nickname!");
+            
+            if(ref.toUpperCase() === "VAIBHAV") {
+                document.getElementById('c-count').innerText = "20000";
+                alert("Referral Applied! 10,000 Coins Added.");
+            }
 
-        function startLoading() {
-            let p = 0;
-            let intv = setInterval(() => { 
-                p += 2; 
-                document.getElementById('load-progress').style.width = p + "%"; 
-                if(p >= 100){ 
-                    clearInterval(intv); 
-                    document.getElementById('loading-screen').style.display='none'; 
-                    document.getElementById('ui').style.display='block'; 
-                    startRain(); 
-                } 
-            }, 30);
+            document.getElementById('login-screen').style.display='none';
+            document.getElementById('lobby').style.display='flex';
+            document.getElementById('wel-name').innerText = "WELCOME, " + name.toUpperCase();
+            document.getElementById('prof-name').innerText = name.toUpperCase();
+            
+            // Start your Audio
+            document.getElementById('bgm').play().catch(() => console.log("Click anywhere to start music"));
         }
 
-        function openMassModal() { document.getElementById('mass-modal').style.display = 'block'; }
-        function closeModal() { document.getElementById('mass-modal').style.display = 'none'; }
-
-        function applyCode() {
-            let code = document.getElementById('code-input').value;
-            if (code === "MASS50") {
-                diamonds += 50;
-                alert("SUCCESS: 50 Diamonds Added!");
-            } else if (code === "KING50K") {
-                diamonds += 30000;
-                kfCoins += 50000;
-                alert("MASS REWARD: 30,000 Diamonds & 50,000 KF Coins Added!");
-            } else {
-                alert("INVALID CODE!");
-            }
-            save();
+        // UI Handlers
+        function showPayModal() { document.getElementById('pay-modal').style.display='block'; }
+        function closeModal() { document.getElementById('pay-modal').style.display='none'; }
+        function submitPay() {
+            if(!document.getElementById('ss-upload').value) return alert("Upload Screenshot first!");
+            alert("Verification Sent! Produced by Vaibhav.");
             closeModal();
         }
 
-        function save() {
-            localStorage.setItem('kf_d', diamonds);
-            localStorage.setItem('kf_c', kfCoins);
-            document.getElementById('diamond-bal').innerText = diamonds;
-            document.getElementById('kf-coin-bal').innerText = kfCoins;
-        }
-
-        function startTraining() {
-            alert("Entering Training Ground... (Landscape Mode Active)");
-            // Logic to switch 3D scene to Training
-        }
-
-        function pay(amt) { 
-            window.location.href = `upi://pay?pa=dineshbherya@ybl&pn=KingsFire&am=${amt}&cu=INR`; 
-        }
-
-        // Rain Logic
-        const canvas = document.getElementById('rain-canvas');
-        const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-        let drops = [];
-        for(let i=0; i<150; i++) drops.push({x: Math.random()*canvas.width, y: Math.random()*canvas.height, s: Math.random()*7+5});
+        function openMap() { document.getElementById('map-screen').style.display='flex'; }
+        function setMap(m) { alert(m + " Ready! Produced by Vaibhav."); closeMap(); }
+        function closeMap() { document.getElementById('map-screen').style.display='none'; }
         
-        function startRain() {
-            ctx.clearRect(0,0,canvas.width, canvas.height);
-            ctx.strokeStyle = 'rgba(174,194,224,0.6)';
-            drops.forEach(d => {
-                ctx.beginPath(); ctx.moveTo(d.x, d.y); ctx.lineTo(d.x, d.y+d.s); ctx.stroke();
-                d.y += d.s; if(d.y > canvas.height) d.y = -20;
-            });
-            requestAnimationFrame(startRain);
-        }
+        function showProfile() { document.getElementById('profile-screen').style.display='flex'; }
+        function closeProfile() { document.getElementById('profile-screen').style.display='none'; }
 
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        document.body.appendChild(renderer.domElement);
-        camera.position.z = 5;
-        
-        function animate() { 
-            requestAnimationFrame(animate); 
-            renderer.render(scene, camera); 
-        }
-        animate();
-        save();
+        // Legends List
+        const chars = ["The Boss (FREE)", "Normal Female (FREE)", "D Boss", "Kiccha", "Appu", "Virat Kohli", "SRK", "Pushpa Raj", "Rocky Bhai", "Kantara Shiva"];
+        const list = document.getElementById('char-list');
+        chars.forEach(c => {
+            let div = document.createElement('div');
+            div.className = "card";
+            div.innerHTML = `<p style="font-size:11px">${c}</p><button class="btn-mass" style="font-size:9px">EQUIP</button>`;
+            list.appendChild(div);
+        });
     </script>
 </body>
 </html>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, orientation=landscape">
-    <title>Kings Fire: Ultimate Refresh</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <style>
-        body { margin: 0; overflow: hidden; background: #000; font-family: 'Segoe UI', sans-serif; color: white; text-align: center; }
-        
-        /* SCREENS */
-        .screen { position: fixed; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 10000; background: black; }
-        #kf-logo-screen { display: flex; }
-        #vaibhav-screen { background: #050505; }
-        #loading-screen { background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://upload.wikimedia.org/wikipedia/en/4/41/Flag_of_India.svg'); background-size: cover; background-position: center; }
-        
-        /* WELCOME MESSAGE */
-        #welcome-modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(10,10,10,0.95); padding: 30px; border: 3px solid gold; z-index: 5000; pointer-events: auto; border-radius: 20px; width: 60%; box-shadow: 0 0 50px rgba(255,215,0,0.3); }
-
-        .loader-bar { width: 60%; height: 10px; background: #222; border-radius: 5px; margin-top: 20px; overflow: hidden; }
-        #load-progress { width: 0%; height: 100%; background: #138808; transition: width 0.1s; }
-        
-        #ui { display: none; position: absolute; inset: 0; z-index: 100; pointer-events: none; }
-        .hud { display: flex; justify-content: space-between; padding: 15px 40px; pointer-events: auto; background: rgba(0,0,0,0.85); border-bottom: 2px solid gold; }
-        .btn { background: gold; color: black; padding: 12px 25px; border: none; font-weight: bold; border-radius: 8px; cursor: pointer; pointer-events: auto; margin: 5px; font-size: 16px; transition: transform 0.2s; }
-        .btn:active { transform: scale(0.9); }
-        #rain-canvas { position: absolute; inset: 0; pointer-events: none; opacity: 0.4; }
-    </style>
-</head>
-<body>
-
-    <div id="kf-logo-screen" class="screen">
-        <h1 style="color: gold; font-size: 80px; text-shadow: 0 0 30px gold; margin: 0;">KF</h1>
-        <p style="color: gold; letter-spacing: 15px; font-weight: bold;">KINGS FIRE</p>
-    </div>
-
-    <div id="vaibhav-screen" class="screen">
-        <p style="letter-spacing: 5px; color: #888; margin: 0;">PRODUCED BY</p>
-        <h1 style="color: gold; font-size: 60px; margin: 0;">VAIBHAV</h1>
-    </div>
-
-    <div id="loading-screen" class="screen">
-        <h2 style="text-shadow: 2px 2px 15px black;">🇮🇳 PREPARING MASS WORLD...</h2>
-        <div class="loader-bar"><div id="load-progress"></div></div>
-    </div>
-
-    <div id="welcome-modal">
-        <h2 style="color: gold; margin-top: 0;">👑 WELCOME LEGEND!</h2>
-        <p style="color: #ccc; line-height: 1.6;">
-            Welcome to the new era of <b>Kings Fire</b>.<br>
-            New Characters: <b>Virat Kohli</b> & <b>D Boss</b>.<br>
-            System: Landscape Mode & Monsoon Rain Active.<br>
-            Produced by Vaibhav.
-        </p>
-        <button class="btn" onclick="closeWelcome()">LET'S BATTLE!</button>
-    </div>
-
-    <canvas id="rain-canvas"></canvas>
-    <div id="ui">
-        <div class="hud">
-            <div style="font-size: 22px;">💎 <span id="diamond-bal">0</span> | 🟡 KF: <span id="kf-coin-bal">0</span></div>
-            <div style="color: gold; font-weight: bold; font-size: 22px;">LOBBY</div>
-        </div>
-
-        <div style="position: absolute; bottom: 40px; right: 40px; pointer-events: auto;">
-            <button class="btn" style="background: #138808; color: white;" onclick="alert('Training Ground Loading...')">START TRAINING</button>
-            <button class="btn" onclick="pay(20)">TOP-UP</button>
-        </div>
-    </div>
-
-    <script>
-        let diamonds = parseInt(localStorage.getItem('kf_d')) || 0;
-        let kfCoins = parseInt(localStorage.getItem('kf_c')) || 0;
-        let isFirstTime = localStorage.getItem('kf_first_time') === null;
-
-        // --- SEQUENCE TIMERS ---
-        setTimeout(() => { 
-            document.getElementById('kf-logo-screen').style.display='none'; 
-            document.getElementById('vaibhav-screen').style.display='flex'; 
-        }, 3000);
-        
-        setTimeout(() => { 
-            document.getElementById('vaibhav-screen').style.display='none'; 
-            document.getElementById('loading-screen').style.display='flex'; 
-            startLoading(); 
-        }, 5000);
-
-        function startLoading() {
-            let p = 0;
-            let intv = setInterval(() => { 
-                p += 2; 
-                document.getElementById('load-progress').style.width = p + "%"; 
-                if(p >= 100){ 
-                    clearInterval(intv); 
-                    document.getElementById('loading-screen').style.display='none'; 
-                    enterGame(); 
-                } 
-            }, 30);
-        }
-
-        function enterGame() {
-            document.getElementById('ui').style.display = 'block'; 
-            startRain();
-            if(isFirstTime) {
-                document.getElementById('welcome-modal').style.display = 'block';
-            }
-            save();
-        }
-
-        function closeWelcome() {
-            localStorage.setItem('kf_first_time', 'no');
-            document.getElementById('welcome-modal').style.display = 'none';
-        }
-
-        function save() {
-            document.getElementById('diamond-bal').innerText = diamonds;
-            document.getElementById('kf-coin-bal').innerText = kfCoins;
-        }
-
-        function pay(amt) { window.location.href = `upi://pay?pa=dineshbherya@ybl&pn=KingsFire&am=${amt}&cu=INR`; }
-
-        // --- RAIN LOGIC ---
-        const canvas = document.getElementById('rain-canvas');
-        const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-        let drops = [];
-        for(let i=0; i<150; i++) drops.push({x: Math.random()*canvas.width, y: Math.random()*canvas.height, s: Math.random()*8+4});
-        function startRain() {
-            ctx.clearRect(0,0,canvas.width, canvas.height);
-            ctx.strokeStyle = 'rgba(174,194,224,0.5)';
-            drops.forEach(d => {
-                ctx.beginPath(); ctx.moveTo(d.x, d.y); ctx.lineTo(d.x, d.y+d.s); ctx.stroke();
-                d.y += d.s; if(d.y > canvas.height) d.y = -20;
-            });
-            requestAnimationFrame(startRain);
-        }
-
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        document.body.appendChild(renderer.domElement);
-        camera.position.z = 5;
-        function animate() { requestAnimationFrame(animate); renderer.render(scene, camera); }
-        animate();
-    </script>
-</body>
-</html>
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, orientation=landscape">
-    <title>Kings Fire: Fixed Edition</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <style>
-        body { margin: 0; overflow: hidden; background: #000; font-family: 'Segoe UI', sans-serif; color: white; text-align: center; width: 100vw; height: 100vh; }
-        
-        /* ALL SCREENS HIDDEN BY DEFAULT EXCEPT LOGO */
-        .screen { position: fixed; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 10000; background: black; }
-        #kf-logo-screen { display: flex; opacity: 1; transition: opacity 1s; }
-        #vaibhav-screen { background: #050505; }
-        #loading-screen { background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://upload.wikimedia.org/wikipedia/en/4/41/Flag_of_India.svg'); background-size: cover; background-position: center; }
-        
-        #welcome-modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(15,15,15,0.98); padding: 25px; border: 3px solid gold; z-index: 20000; pointer-events: auto; border-radius: 15px; width: 50%; }
-
-        .loader-bar { width: 50%; height: 8px; background: #222; border-radius: 4px; margin-top: 20px; overflow: hidden; }
-        #load-progress { width: 0%; height: 100%; background: #138808; }
-        
-        #ui { display: none; position: absolute; inset: 0; z-index: 100; pointer-events: none; }
-        .hud { display: flex; justify-content: space-between; padding: 10px 40px; pointer-events: auto; background: rgba(0,0,0,0.8); border-bottom: 2px solid gold; }
-        .btn { background: gold; color: black; padding: 10px 20px; border: none; font-weight: bold; border-radius: 5px; cursor: pointer; pointer-events: auto; margin: 5px; }
-        #rain-canvas { position: absolute; inset: 0; pointer-events: none; opacity: 0.3; }
-    </style>
-</head>
-<body>
-
-    <div id="kf-logo-screen" class="screen" onclick="startSequence()">
-        <h1 style="color: gold; font-size: 70px; margin: 0; text-shadow: 0 0 20px gold;">KF</h1>
-        <p style="color: gold; letter-spacing: 10px;">KINGS FIRE</p>
-        <p style="font-size: 12px; color: #444; margin-top: 20px;">TAP TO BEGIN IF STUCK</p>
-    </div>
-
-    <div id="vaibhav-screen" class="screen">
-        <p style="letter-spacing: 3px; color: #888;">PRODUCED BY</p>
-        <h1 style="color: gold; font-size: 50px; margin: 0;">VAIBHAV</h1>
-    </div>
-
-    <div id="loading-screen" class="screen">
-        <h2 style="text-shadow: 2px 2px 10px black;">🇮🇳 LOADING MASS WORLD...</h2>
-        <div class="loader-bar"><div id="load-progress"></div></div>
-    </div>
-
-    <div id="welcome-modal">
-        <h2 style="color: gold;">👑 WELCOME LEGEND!</h2>
-        <p>New Era of Kings Fire is LIVE.<br>Play as <b>Virat Kohli</b> & <b>D Boss</b>.</p>
-        <button class="btn" onclick="closeWelcome()">START BATTLE</button>
-    </div>
-
-    <canvas id="rain-canvas"></canvas>
-    <div id="ui">
-        <div class="hud">
-            <div style="font-size: 20px;">💎 <span id="diamond-bal">0</span> | 🟡 KF: <span id="kf-coin-bal">0</span></div>
-            <div style="color: gold; font-weight: bold;">LOBBY</div>
-        </div>
-        <div style="position: absolute; bottom: 30px; right: 30px; pointer-events: auto;">
-            <button class="btn" style="background: green; color: white;" onclick="alert('Training Grounds Soon!')">TRAINING</button>
-            <button class="btn" onclick="pay(20)">TOP-UP</button>
-        </div>
-    </div>
-
-    <script>
-        // Force start if no click after 2 seconds
-        window.onload = () => { setTimeout(startSequence, 2000); };
-
-        function startSequence() {
-            const logo = document.getElementById('kf-logo-screen');
-            const vScren = document.getElementById('vaibhav-screen');
-            
-            // Move to Vaibhav Screen
-            logo.style.display = 'none';
-            vScren.style.display = 'flex';
-
-            setTimeout(() => {
-                vScren.style.display = 'none';
-                document.getElementById('loading-screen').style.display = 'flex';
-                runLoader();
-            }, 2500);
-        }
-
-        function runLoader() {
-            let prog = 0;
-            let bar = document.getElementById('load-progress');
-            let intv = setInterval(() => {
-                prog += 2;
-                bar.style.width = prog + "%";
-                if(prog >= 100) {
-                    clearInterval(intv);
-                    showLobby();
-                }
-            }, 40);
-        }
-
-        function showLobby() {
-            document.getElementById('loading-screen').style.display = 'none';
-            document.getElementById('ui').style.display = 'block';
-            
-            // Show welcome only once
-            if(!localStorage.getItem('kf_new')) {
-                document.getElementById('welcome-modal').style.display = 'block';
-            }
-            startRain();
-        }
-
-        function closeWelcome() {
-            localStorage.setItem('kf_new', 'true');
-            document.getElementById('welcome-modal').style.display = 'none';
-        }
-
-        function pay(amt) { window.location.href = `upi://pay?pa=dineshbherya@ybl&pn=KingsFire&am=${amt}&cu=INR`; }
-
-        // RAIN
-        function startRain() {
-            const c = document.getElementById('rain-canvas');
-            const ctx = c.getContext('2d');
-            c.width = window.innerWidth; c.height = window.innerHeight;
-            let drops = [];
-            for(let i=0; i<100; i++) drops.push({x: Math.random()*c.width, y: Math.random()*c.height, s: Math.random()*5+5});
-            function draw() {
-                ctx.clearRect(0,0,c.width,c.height);
-                ctx.strokeStyle = 'rgba(174,194,224,0.5)';
-                drops.forEach(d => {
-                    ctx.beginPath(); ctx.moveTo(d.x, d.y); ctx.lineTo(d.x, d.y+d.s); ctx.stroke();
-                    d.y += d.s; if(d.y > c.height) d.y = -10;
-                });
-                requestAnimationFrame(draw);
-            }
-            draw();
-        }
-
-        // 3D Scene
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({alpha: true});
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        document.body.appendChild(renderer.domElement);
-        camera.position.z = 5;
-        function animate() { requestAnimationFrame(animate); renderer.render(scene, camera); }
-        animate();
-    </script>
-</body>
-</html>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, orientation=landscape">
-    <title>Kings Fire: Force Start</title>
-    <style>
-        body { margin: 0; background: #000; color: gold; font-family: sans-serif; text-align: center; overflow: hidden; }
-        .page { position: fixed; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center; background: black; }
-        #logo-page { display: flex; z-index: 100; }
-        #vaibhav-page { z-index: 90; }
-        #flag-page { background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://upload.wikimedia.org/wikipedia/en/4/41/Flag_of_India.svg'); background-size: cover; background-position: center; z-index: 80; }
-        #lobby { display: none; position: fixed; inset: 0; background: #050510; z-index: 10; }
-        
-        .start-btn { margin-top: 20px; padding: 15px 30px; background: gold; border: none; font-weight: bold; border-radius: 10px; cursor: pointer; }
-        .bar { width: 60%; height: 10px; background: #222; border-radius: 5px; margin-top: 20px; border: 1px solid #444; }
-        #progress { width: 0%; height: 100%; background: #138808; }
-        .hud { display: flex; justify-content: space-between; padding: 15px; background: rgba(0,0,0,0.8); border-bottom: 2px solid gold; width: 100%; box-sizing: border-box; }
-    </style>
-</head>
-<body>
-
-    <div id="logo-page" class="page">
-        <h1 style="font-size: 70px;">KF</h1>
-        <p style="letter-spacing: 10px;">KINGS FIRE</p>
-        <button class="start-btn" onclick="goToVaibhav()">TAP TO START ➔</button>
-    </div>
-
-    <div id="vaibhav-page" class="page">
-        <p style="color: #888;">PRODUCED BY</p>
-        <h1 style="font-size: 50px;">VAIBHAV</h1>
-    </div>
-
-    <div id="flag-page" class="page">
-        <h2>🇮🇳 LOADING...</h2>
-        <div class="bar"><div id="progress"></div></div>
-    </div>
-
-    <div id="lobby">
-        <div class="hud">
-            <span>💎 0 | 🟡 KF: 0</span>
-            <span style="color: gold; font-weight: bold;">LOBBY</span>
-        </div>
-        <div style="position: absolute; bottom: 30px; right: 30px;">
-            <button class="start-btn" onclick="window.location.href='upi://pay?pa=dineshbherya@ybl&pn=KingsFire&am=20&cu=INR'">TOP-UP ₹20</button>
-        </div>
-        <canvas id="rain" style="position: absolute; inset: 0; pointer-events: none;"></canvas>
-    </div>
-
-    <script>
-        function goToVaibhav() {
-            document.getElementById('logo-page').style.display = 'none';
-            document.getElementById('vaibhav-page').style.display = 'flex';
-            setTimeout(goToFlag, 2000);
-        }
-
-        function goToFlag() {
-            document.getElementById('vaibhav-page').style.display = 'none';
-            document.getElementById('flag-page').style.display = 'flex';
-            let p = 0;
-            let intv = setInterval(() => {
-                p += 5;
-                document.getElementById('progress').style.width = p + "%";
-                if(p >= 100) {
-                    clearInterval(intv);
-                    showLobby();
-                }
-            }, 100);
-        }
-
-        function showLobby() {
-            document.getElementById('flag-page').style.display = 'none';
-            document.getElementById('lobby').style.display = 'block';
-            startRain();
-        }
-
-        function startRain() {
-            const c = document.getElementById('rain');
-            const ctx = c.getContext('2d');
-            c.width = window.innerWidth; c.height = window.innerHeight;
-            let drops = [];
-            for(let i=0; i<100; i++) drops.push({x: Math.random()*c.width, y: Math.random()*c.height, s: Math.random()*5+5});
-            function draw() {
-                ctx.clearRect(0,0,c.width,c.height);
-                ctx.strokeStyle = 'rgba(174,194,224,0.5)';
-                drops.forEach(d => {
-                    ctx.beginPath(); ctx.moveTo(d.x, d.y); ctx.lineTo(d.x, d.y+d.s); ctx.stroke();
-                    d.y += d.s; if(d.y > c.height) d.y = -10;
-                });
-                requestAnimationFrame(draw);
-            }
-            draw();
-        }
-    </script>
-</body>
-</html><!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, orientation=landscape">
-    <title>Kings Fire: Tap Anywhere</title>
-    <style>
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #000; overflow: hidden; font-family: sans-serif; }
-        .stage { position: absolute; width: 100%; height: 100%; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
-        
-        /* Stage 1: Logo (VISIBLE BY DEFAULT) */
-        #s1 { display: flex; background: black; cursor: pointer; }
-        #s2 { background: #050505; }
-        #s3 { background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://upload.wikimedia.org/wikipedia/en/4/41/Flag_of_India.svg'); background-size: cover; background-position: center; }
-        #s4 { background: #0a0a15; }
-
-        h1 { color: gold; font-size: 60px; margin: 0; }
-        p { color: gold; letter-spacing: 8px; }
-        .bar-container { width: 60%; height: 10px; background: #222; border-radius: 5px; margin-top: 20px; border: 1px solid #444; }
-        #fill { width: 0%; height: 100%; background: #138808; }
-        .hud { position: absolute; top: 0; width: 100%; display: flex; justify-content: space-between; padding: 15px; background: rgba(0,0,0,0.8); border-bottom: 2px solid gold; box-sizing: border-box; }
-        .topup-btn { position: absolute; bottom: 30px; right: 30px; padding: 15px 30px; background: gold; border: none; font-weight: bold; border-radius: 10px; }
-    </style>
-</head>
-<body onclick="handleGlobalClick()">
-
-    <div id="s1" class="stage">
-        <h1>KF</h1>
-        <p>KINGS FIRE</p>
-        <div style="color: #444; margin-top: 30px; font-size: 14px;">TAP ANYWHERE TO START</div>
-    </div>
-
-    <div id="s2" class="stage">
-        <p style="color: #888;">PRODUCED BY</p>
-        <h1>VAIBHAV</h1>
-    </div>
-
-    <div id="s3" class="stage">
-        <h2 style="color: white; text-shadow: 2px 2px 10px #000;">🇮🇳 LOADING MASS WORLD...</h2>
-        <div class="bar-container"><div id="fill"></div></div>
-    </div>
-
-    <div id="s4" class="stage">
-        <div class="hud">
-            <span style="color: cyan;">💎 0 | 🟡 KF: 0</span>
-            <span style="color: gold; font-weight: bold;">KINGS FIRE LOBBY</span>
-        </div>
-        <canvas id="rain" style="position: absolute; inset: 0; pointer-events: none;"></canvas>
-        <button class="topup-btn" onclick="event.stopPropagation(); window.location.href='upi://pay?pa=dineshbherya@ybl&pn=KingsFire&am=20&cu=INR'">TOP-UP ₹20</button>
-    </div>
-
-    <script>
-        let currentStage = 1;
-
-        function handleGlobalClick() {
-            if (currentStage === 1) {
-                // Move to Vaibhav
-                document.getElementById('s1').style.display = 'none';
-                document.getElementById('s2').style.display = 'flex';
-                currentStage = 2;
-                
-                // Auto-advance after 2 seconds
-                setTimeout(() => {
-                    document.getElementById('s2').style.display = 'none';
-                    document.getElementById('s3').style.display = 'flex';
-                    startLoading();
-                }, 2000);
-            }
-        }
-
-        function startLoading() {
-            let width = 0;
-            let interval = setInterval(() => {
-                width += 5;
-                document.getElementById('fill').style.width = width + "%";
-                if (width >= 100) {
-                    clearInterval(interval);
-                    showLobby();
-                }
-            }, 100);
-        }
-
-        function showLobby() {
-            document.getElementById('s3').style.display = 'none';
-            document.getElementById('s4').style.display = 'flex';
-            initRain();
-        }
-
-        function initRain() {
-            const c = document.getElementById('rain');
-            const ctx = c.getContext('2d');
-            c.width = window.innerWidth; c.height = window.innerHeight;
-            let drops = [];
-            for(let i=0; i<100; i++) drops.push({x: Math.random()*c.width, y: Math.random()*c.height, s: Math.random()*5+5});
-            function draw() {
-                ctx.clearRect(0,0,c.width,c.height);
-                ctx.strokeStyle = 'rgba(174,194,224,0.5)';
-                drops.forEach(d => {
-                    ctx.beginPath(); ctx.moveTo(d.x, d.y); ctx.lineTo(d.x, d.y+d.s); ctx.stroke();
-                    d.y += d.s; if(d.y > c.height) d.y = -10;
-                });
-                requestAnimationFrame(draw);
-            }
-            draw();
-        }
-    </script>
-</body>
-</html>
-using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.SceneManagement;
-
-public class KingsFireMasterController : MonoBehaviour 
-{
-    [Header("Security & Payment Settings")]
-    private bool isPaid = false;
-    private int secretAdminTaps = 0;
-    public string upiId = "dineshbherya@ybl";
-    
-    [Header("UI Panels")]
-    public GameObject lockScreen; // Screen that blocks the game
-    public GameObject mainLobby;  // The game lobby
-    public GameObject adminPanel; // Hidden admin panel
-    public InputField adminPasswordField;
-
-    [Header("Weapon & Environment Audio")]
-    public AudioSource weaponSource;
-    public AudioSource environmentSource; // For Rain/Airplane
-    public AudioSource footstepSource;
-
-    // --- INITIALIZATION ---
-    void Start() 
-    {
-        // Force Landscape Mode for the APK
-        Screen.orientation = ScreenOrientation.LandscapeLeft;
-        
-        // Block game access until payment is verified
-        lockScreen.SetActive(true);
-        mainLobby.SetActive(false);
-        adminPanel.SetActive(false);
-    }
-
-    // --- PAYMENT GATE LOGIC ---
-    public void ProcessPaymentVerification() 
-    {
-        // This function triggers after the buyer uploads their screenshot
-        // If verification passes:
-        isPaid = true;
-        lockScreen.SetActive(false);
-        mainLobby.SetActive(true);
-        Debug.Log("Payment Verified. Access Granted.");
-    }
-
-    // --- SECRET ADMIN PANEL ACCESS ---
-    public void OnTitleHeaderClicked() 
-    {
-        // Hidden Logic: Must tap the title 5 times to reveal Admin Panel
-        secretAdminTaps++;
-        if (secretAdminTaps >= 5) 
-        {
-            adminPanel.SetActive(true);
-            secretAdminTaps = 0;
-            Debug.Log("Secret Admin Panel Revealed.");
-        }
-    }
-
-    // --- AUDIO SYSTEM INTEGRATION ---
-    public void PlayWeaponSound(AudioClip clip) 
-    {
-        // Use PlayOneShot so sounds don't cut each other off
-        weaponSource.PlayOneShot(clip);
-    }
-
-    public void SetEnvironmentVolume(float intensity) 
-    {
-        // Adjust for Rain or Airplane volume dynamically
-        environmentSource.volume = intensity;
-    }
-}
-
