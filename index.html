@@ -3,37 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, orientation=landscape">
-    <title>KINGS FIRE - ULTIMATE</title>
+    <title>KINGS FIRE - GLOBAL MASS</title>
     <style>
         body { margin: 0; background: #000; color: gold; font-family: 'Segoe UI', sans-serif; text-align: center; overflow: hidden; }
         .screen { height: 100vh; width: 100vw; display: none; flex-direction: column; justify-content: center; align-items: center; position: absolute; }
         
         /* 1. CINEMATIC STARTUP */
         #logo-start { display: flex; background: black; }
-        
-        /* PURE CSS INDIAN FLAG (NO MORE ERRORS) */
         #flag-start { background: #000; }
-        .css-flag { width: 300px; height: 200px; display: flex; flex-direction: column; border: 2px solid white; box-shadow: 0 0 20px rgba(255,255,255,0.2); }
+        .css-flag { width: 240px; height: 160px; display: flex; flex-direction: column; border: 1px solid white; }
         .saffron { background: #FF9933; flex: 1; }
         .white { background: #FFFFFF; flex: 1; display: flex; justify-content: center; align-items: center; }
         .green { background: #128807; flex: 1; }
-        .chakra { width: 40px; height: 40px; border: 2px solid #000080; border-radius: 50%; position: relative; }
+        .chakra { width: 30px; height: 30px; border: 2px solid #000080; border-radius: 50%; }
 
-        /* LOBBY UI */
+        /* 2. LOBBY UI */
         #lobby { background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://w0.peakpx.com/wallpaper/242/502/HD-wallpaper-garena-free-fire-winterlands-lobby-thumbnail.jpg'); background-size: cover; }
         .top-bar { position: absolute; top: 0; width: 100%; height: 60px; background: rgba(0,0,0,0.85); display: flex; justify-content: space-between; align-items: center; padding: 0 20px; border-bottom: 2px solid gold; box-sizing: border-box; }
-        .side-menu { position: absolute; left: 15px; top: 80px; display: flex; flex-direction: column; gap: 10px; }
         
+        /* 3. GLOBAL CHAT */
+        #chat-box { position: absolute; left: 10px; bottom: 90px; width: 250px; height: 150px; background: rgba(0,0,0,0.7); border: 1px solid gold; border-radius: 10px; display: flex; flex-direction: column; text-align: left; font-size: 12px; }
+        #chat-content { flex: 1; overflow-y: auto; padding: 5px; color: white; }
+        #chat-input { background: #111; border: none; border-top: 1px solid gold; color: gold; padding: 5px; border-radius: 0 0 10px 10px; }
+
         .btn-mass { background: gold; color: #000; border: none; padding: 12px 25px; font-weight: bold; border-radius: 5px; cursor: pointer; text-transform: uppercase; }
         .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 400px; background: rgba(10,10,10,0.98); border: 2px solid gold; padding: 25px; z-index: 5000; border-radius: 15px; }
-        input { background: #222; border: 1px solid gold; color: white; padding: 12px; border-radius: 8px; margin: 10px; width: 85%; text-align: center; }
+        input { background: #222; border: 1px solid gold; color: white; padding: 10px; border-radius: 8px; margin: 10px; width: 85%; text-align: center; }
     </style>
 </head>
 <body>
 
     <div id="logo-start" class="screen">
-        <h1 style="font-size: 60px; color: gold;">KINGS FIRE</h1>
-        <h2 style="color: white; letter-spacing: 5px;">PRODUCER: VAIBHAV</h2>
+        <h1 style="font-size: 50px; color: gold;">KINGS FIRE</h1>
+        <h2 style="color: white; letter-spacing: 5px;">PRODUCED BY VAIBHAV</h2>
     </div>
 
     <div id="flag-start" class="screen">
@@ -42,69 +44,55 @@
             <div class="white"><div class="chakra"></div></div>
             <div class="green"></div>
         </div>
-        <h2 style="margin-top: 20px; color: white; letter-spacing: 3px;">JAI HIND</h2>
+        <h3 style="color: white; margin-top: 15px;">JAI HIND</h3>
     </div>
 
     <div id="login-screen" class="screen" style="background: #111;">
-        <div style="border: 2px solid gold; padding: 40px; border-radius: 20px;">
+        <div style="border: 2px solid gold; padding: 30px; border-radius: 20px;">
             <h2>KINGS FIRE LOGIN</h2>
             <input type="text" id="p-name" placeholder="Enter Nickname...">
-            <br>
-            <button class="btn-mass" onclick="enterGame()">ENTER BATTLE</button>
+            <br><button class="btn-mass" onclick="enterGame()">ENTER LOBBY</button>
         </div>
     </div>
 
     <div id="lobby" class="screen">
         <div class="top-bar">
-            <div onclick="adminTrigger()" style="text-align:left; cursor:pointer;"><b id="user-name">VAIBHAV</b> <br> <small style="color:gold;">RANK: PRO DEVELOPER</small></div>
+            <div onclick="adminTrigger()" style="text-align:left; cursor:pointer;"><b id="user-name">PLAYER</b> <br> <small style="color:gold;">PRO DEV</small></div>
             <div>💰 <span id="coins">10000</span> | 💎 <span id="diamonds">0</span></div>
             <button class="btn-mass" style="padding: 5px 10px; font-size: 10px;" onclick="showModal('redeem-modal')">REDEEM</button>
         </div>
 
-        <div class="side-menu">
-            <button class="btn-mass" style="font-size: 11px;">VAULT</button>
-            <button class="btn-mass" style="font-size: 11px;">EMOTES</button>
-            <button class="btn-mass" style="font-size: 11px; background:white;" onclick="showModal('pay-modal')">STORE</button>
+        <div id="chat-box">
+            <div id="chat-content"><b>System:</b> Welcome to Kings Fire!</div>
+            <input type="text" id="chat-input" placeholder="Global Chat..." onkeypress="sendChat(event)">
         </div>
 
-        <button class="btn-mass" style="background: red; color: white; position: absolute; bottom: 30px; padding: 15px 80px; font-size: 25px; border: 2px solid white;" onclick="playGunSound()">START MATCH</button>
+        <button class="btn-mass" style="background: red; color: white; position: absolute; bottom: 20px; padding: 15px 80px; font-size: 25px; border: 2px solid white;">START MATCH</button>
     </div>
 
     <div id="redeem-modal" class="modal">
-        <h2>ENTER REDEEM CODE</h2>
-        <input type="text" id="code-input" placeholder="Type Code Here...">
-        <button class="btn-mass" onclick="useCode()">REDEEM NOW</button>
+        <h2>REDEEM CODES</h2>
+        <input type="text" id="code-input" placeholder="Enter Code...">
+        <button class="btn-mass" onclick="useCode()">REDEEM</button>
         <button class="btn-mass" style="background:#333; color:white;" onclick="closeModal('redeem-modal')">BACK</button>
     </div>
 
     <div id="admin-panel" class="modal" style="border-color: red;">
-        <h2 style="color: red;">⚠️ SYSTEM ADMIN PANEL</h2>
-        <input type="number" id="add-diamonds" placeholder="Set Diamonds">
-        <input type="number" id="add-coins" placeholder="Set KF Coins">
-        <button class="btn-mass" onclick="applyAdmin()">UPDATE ACCOUNT</button>
-        <button class="btn-mass" style="background:#333; color:white;" onclick="closeModal('admin-panel')">EXIT ADMIN</button>
-    </div>
-
-    <div id="pay-modal" class="modal">
-        <h2>DIAMOND STORE</h2>
-        <p>1000 Diamonds = ₹100</p>
-        <button class="btn-mass" onclick="window.location.href='upi://pay?pa=dineshbherya@ybl&pn=KingsFire&am=100&cu=INR'">PAY VIA UPI</button>
-        <hr>
-        <p style="font-size: 12px; color: red;">UPLOAD SCREENSHOT FOR REWARD!</p>
-        <input type="file" id="ss-upload">
-        <button class="btn-mass" onclick="alert('Proof Submitted! Checking Reward.')">SUBMIT PROOF</button>
-        <button class="btn-mass" style="background:#333; color:white;" onclick="closeModal('pay-modal')">CLOSE</button>
+        <h2 style="color: red;">ADMIN CONTROL</h2>
+        <input type="number" id="set-diamonds" placeholder="Add Diamonds">
+        <input type="number" id="set-coins" placeholder="Add KF Coins">
+        <button class="btn-mass" onclick="applyAdmin()">APPLY</button>
+        <button class="btn-mass" style="background:#333; color:white;" onclick="closeModal('admin-panel')">EXIT</button>
     </div>
 
     <audio id="bgm" loop src="lv_0_20260123223058.mp3"></audio>
-    <audio id="gun" src="https://www.soundjay.com/mechanical/gun-gunshot-01.mp3"></audio>
 
     <script>
         let clicks = 0;
-        let dBalance = 0;
-        let cBalance = 10000;
+        let dBal = 0;
+        let cBal = 10000;
 
-        // Startup Sequence
+        // Startup Logic
         setTimeout(() => {
             document.getElementById('logo-start').style.display = 'none';
             document.getElementById('flag-start').style.display = 'flex';
@@ -123,11 +111,22 @@
             document.getElementById('bgm').play();
         }
 
+        function sendChat(e) {
+            if(e.key === 'Enter') {
+                let input = document.getElementById('chat-input');
+                let content = document.getElementById('chat-content');
+                let name = document.getElementById('user-name').innerText;
+                content.innerHTML += `<div><b>${name}:</b> ${input.value}</div>`;
+                input.value = "";
+                content.scrollTop = content.scrollHeight;
+            }
+        }
+
         function useCode() {
-            let input = document.getElementById('code-input').value;
-            if(input === "KING50") { dBalance += 50; alert("50 Diamonds Added!"); }
-            else if(input === "KINGSFIRE30K") { dBalance += 30000; alert("30,000 Diamonds Added!"); }
-            else if(input === "KFCOINS50K") { cBalance += 50000; alert("50,000 KF Coins Added!"); }
+            let val = document.getElementById('code-input').value;
+            if(val === "KING50") { dBal += 50; alert("50 Diamonds Added!"); }
+            else if(val === "KINGSFIRE30K") { dBal += 30000; alert("30,000 Diamonds Added!"); }
+            else if(val === "KFCOINS50K") { cBal += 50000; alert("50,000 KF Coins Added!"); }
             else { alert("Invalid Code!"); }
             updateUI();
             closeModal('redeem-modal');
@@ -139,22 +138,19 @@
         }
 
         function applyAdmin() {
-            dBalance = parseInt(document.getElementById('add-diamonds').value) || dBalance;
-            cBalance = parseInt(document.getElementById('add-coins').value) || cBalance;
+            dBal += parseInt(document.getElementById('set-diamonds').value) || 0;
+            cBal += parseInt(document.getElementById('set-coins').value) || 0;
             updateUI();
-            alert("Admin Access: Account Updated!");
             closeModal('admin-panel');
         }
 
         function updateUI() {
-            document.getElementById('diamonds').innerText = dBalance;
-            document.getElementById('coins').innerText = cBalance;
+            document.getElementById('diamonds').innerText = dBal;
+            document.getElementById('coins').innerText = cBal;
         }
 
-        function playGunSound() { document.getElementById('gun').play(); alert("Finding Match..."); }
         function showModal(id) { document.getElementById(id).style.display = 'block'; }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
     </script>
 </body>
 </html>
-
