@@ -150,3 +150,140 @@
     </script>
 </body>
 </html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>KINGS FIRE - VAIBHAV</title>
+    <style>
+        :root { --gold: #FFD700; --red: #FF4500; }
+        body { 
+            margin: 0; background: #000; color: white; font-family: sans-serif; 
+            overflow: hidden; width: 100vw; height: 100vh;
+        }
+
+        /* ಲ್ಯಾಂಡ್ ಸ್ಕೇಪ್ ಚೆಕ್ - ಫೋನ್ ಅಡ್ಡವಾಗಿ ಇಲ್ಲದಿದ್ದರೆ ಈ ಮೆಸೇಜ್ ತೋರಿಸುತ್ತದೆ */
+        #rotate-warning {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: black; z-index: 9999; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; text-align: center;
+        }
+        @media screen and (orientation: landscape) {
+            #rotate-warning { display: none; }
+        }
+
+        .screen { height: 100vh; width: 100vw; display: none; flex-direction: column; justify-content: center; align-items: center; position: absolute; }
+        
+        /* STARTUP */
+        #splash { display: flex; }
+        .css-flag { width: 180px; height: 110px; display: flex; flex-direction: column; border: 1px solid white; margin-bottom: 10px; }
+        
+        /* LOBBY UI */
+        #lobby { 
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://w0.peakpx.com/wallpaper/354/655/HD-wallpaper-garena-free-fire-cool-backgrounds-thumbnail.jpg'); 
+            background-size: cover; background-position: center;
+        }
+
+        .top-bar { 
+            position: absolute; top: 0; width: 100%; height: 50px; 
+            background: rgba(0,0,0,0.8); display: flex; justify-content: space-between; 
+            align-items: center; padding: 0 15px; border-bottom: 1px solid var(--gold); box-sizing: border-box;
+        }
+
+        .btn-start { 
+            position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%);
+            background: var(--red); color: white; padding: 12px 60px; font-size: 22px; 
+            border: 2px solid white; border-radius: 10px; cursor: pointer; font-weight: bold;
+            box-shadow: 0 0 15px var(--red); z-index: 10;
+        }
+
+        .side-menu { position: absolute; right: 10px; top: 60px; display: flex; flex-direction: column; gap: 8px; }
+        .icon-box { width: 40px; height: 40px; background: rgba(0,0,0,0.7); border: 1px solid var(--gold); border-radius: 8px; display: flex; justify-content: center; align-items: center; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <div id="rotate-warning">
+        <h2 style="color: gold;">PLEASE ROTATE YOUR PHONE</h2>
+        <p>ಗೇಮ್ ಆಡಲು ಫೋನ್ ಅಡ್ಡವಾಗಿ ಹಿಡಿಯಿರಿ</p>
+    </div>
+
+    <div id="splash" class="screen">
+        <h1 style="font-size: 40px; color: var(--gold);">KINGS FIRE</h1>
+        <div id="flag-ui" style="display:none; flex-direction:column; align-items:center;">
+            <div class="css-flag">
+                <div style="background:#FF9933;flex:1"></div>
+                <div style="background:#FFF;flex:1;display:flex;justify-content:center;align-items:center">
+                    <div style="width:20px;height:20px;border:1px solid blue;border-radius:50%"></div>
+                </div>
+                <div style="background:#128807;flex:1"></div>
+            </div>
+            <h2 style="letter-spacing:4px;">VAIBHAV</h2>
+        </div>
+    </div>
+
+    <div id="login-screen" class="screen" style="background:#111;">
+        <div style="border: 2px solid var(--gold); padding: 20px; border-radius: 15px; text-align:center;">
+            <h3>LOGIN</h3>
+            <button onclick="enterLobby()" style="background:var(--gold); padding:10px 30px; border:none; border-radius:5px; font-weight:bold;">GUEST LOGIN</button>
+        </div>
+    </div>
+
+    <div id="lobby" class="screen">
+        <div class="top-bar">
+            <div onclick="adminTrigger()" style="cursor:pointer; font-size: 14px;"><b>VAIBHAV (DEV)</b></div>
+            <div style="font-size: 12px;">💰 <span id="c-bal">10000</span> | ◆ <span id="d-bal">0</span></div>
+        </div>
+
+        <div class="side-menu">
+            <div class="icon-box" onclick="alert('Vault')">👕</div>
+            <div class="icon-box" onclick="alert('Store')">🛒</div>
+            <div class="icon-box" onclick="alert('Settings')">⚙️</div>
+        </div>
+
+        <div style="position:absolute; bottom:50px; font-size:80px;">🚶</div>
+
+        <button class="btn-start" onclick="startMatch()">START</button>
+    </div>
+
+    <audio id="bgm" loop src="lv_0_20260123223058.mp3"></audio>
+
+    <script>
+        // ಸೌಂಡ್ ಎಫೆಕ್ಟ್ಸ್
+        const gunSound = new Audio('https://www.soundjay.com/mechanical/gun-gunshot-01.mp3');
+
+        // Startup Logic
+        setTimeout(() => {
+            document.querySelector('#splash h1').style.display = 'none';
+            document.getElementById('flag-ui').style.display = 'flex';
+            setTimeout(() => {
+                document.getElementById('splash').style.display = 'none';
+                document.getElementById('login-screen').style.display = 'flex';
+            }, 1500);
+        }, 1500);
+
+        function enterLobby() {
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('lobby').style.display = 'flex';
+            document.getElementById('bgm').play().catch(e => console.log("Music ready"));
+        }
+
+        function startMatch() {
+            gunSound.play();
+            alert("Matchmaking 50 Players...\nWeather: Rainy Mysore.\nMatch Time: 10 Min.");
+        }
+
+        let clicks = 0;
+        function adminTrigger() {
+            clicks++;
+            if(clicks >= 5) {
+                let p = prompt("Enter Admin Password:");
+                if(p === "VAIBHAV_BOSS_2026") { alert("Admin Access Granted!"); }
+                else { alert("Wrong Password!"); }
+                clicks = 0;
+            }
+        }
+    </script>
+</body>
+</html>
